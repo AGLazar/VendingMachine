@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class IOServices {
-
-
     public static final String ANSI_YELLOW = "\u001B[33m"; //color Stuff
     public static final String ANSI_RED = "\u001B[31m"; // color Stuff
     public static final String ANSI_BLUE = "\u001B[34m"; // color Stuff
@@ -21,6 +19,7 @@ public class IOServices {
     boolean validProdSelection = false;
     Integer numberOfProduct;
     Integer numberOfCoins;
+    boolean isAvailable = true;
 
 
     public void displayProductStock(Map<Product, Integer> products) {
@@ -65,13 +64,13 @@ public class IOServices {
                 numberOfProduct = (Integer) products.get(product);
             }
         }
-        return null;
+        return optionProduct;
     }
 
     public Integer insertCoin(Map<Coin, Integer> coins, Map<Product, Integer> products) {
 
         Scanner scanner = new Scanner(System.in);
-        if (validProdSelection && numberOfProduct - 1 > -2) {
+        if (validProdSelection && numberOfProduct  > -1) {
             while (sumInserted < priceOfSelection) {
                 System.out.println("INSERT -- COIN -- HERE: ");
                 Integer optionCoin = scanner.nextInt();
@@ -88,6 +87,20 @@ public class IOServices {
         return sumInserted;
     }
 
+    public void deliverProduct(Map<Product,Integer> products, Map<Coin, Integer> coins) {
+        if (sumInserted >= priceOfSelection && validProdSelection) {
+            System.out.println(ANSI_YELLOW + "Thank you! Here is your product!");
+        } else {
+            while (!validProdSelection) {
+                System.out.println("VendingMachine<->Error1: Invalid product code selection!!!");
+                selectProduct(products);
+                insertCoin(coins, products);
+                payRest();
+                deliverProduct(products, coins);
+            }
+        }
+    }
+
     public Integer payRest() {
         if (sumInserted >= priceOfSelection && validProdSelection) {
             rest = sumInserted - priceOfSelection;
@@ -98,43 +111,16 @@ public class IOServices {
         return rest;
     }
 
-    public void deliverProduct(Map<Product, Integer> products, Map<Coin, Integer> coins) {
-        if (sumInserted >= priceOfSelection && validProdSelection) {
-            System.out.println(ANSI_YELLOW + "Thank you! Here is your product!");
-        } else {
-            while (!validProdSelection) {
-                System.out.println(" ----- VendingMachine <-> Error1: Invalid product code selection!!!");
-                System.out.println();
-                selectProduct(products);
-                insertCoin(coins, products);
-                payRest();
-                deliverProduct(products, coins);
-            }
+    public Boolean searchIfProductIsAvailable() {
+        if (numberOfProduct <= 0 && numberOfProduct != null) {
+            isAvailable = false;
         }
+        if (!isAvailable && numberOfProduct != null) {
+            System.out.println(" ----- VendingMachine <-> Error: Product not available!!!");
+        }
+        return isAvailable;
     }
 
-    public Integer searchIfProductIsAvailable(Map<Product, Integer> products, Map<Coin, Integer> coins) {
-        if (numberOfProduct == 0 && numberOfProduct - 1 > -1) {
-            System.out.println(" ----- VendingMachine <-> Error2: Product not available!!!");
-            System.out.println();
-            selectProduct(products);
-            insertCoin(coins, products);
-            payRest();
-            deliverProduct(products, coins);
-            searchIfProductIsAvailable(products, coins);
-        }
-        return null;
-    }
-
-    public Integer manageProductNumber(Map<Product, Integer> products) {
-        if (sumInserted >= priceOfSelection && numberOfProduct > 0) {
-
-            System.out.println("NUmber of products remaining >>>" + numberOfProduct);
-
-        }
-        System.out.println(" Number of product remaining in stock --> " + numberOfProduct);
-        return products.get(optionProduct);
-    }
 
     public Integer manageRest(Map<Coin, Integer> coins) {
         Integer sumInMachine = 0;

@@ -13,7 +13,7 @@ public class VendingMachine {
     private Map<Coin, Integer> coinStock;
     private Currancy currancyType = Currancy.RON;
     private IOServices ioServices;
-    boolean buyAnotherProduct = false;
+
 
     public VendingMachine(Map<Product, Integer> productStock, Map<Coin, Integer> coinStock, Currancy currancyType, IOServices ioServices) {
         this.productStock = productStock;
@@ -28,21 +28,22 @@ public class VendingMachine {
         ioServices.displayCoin(coinStock);
         ioServices.selectProduct(productStock);
         ioServices.insertCoin(coinStock, productStock);
-        ioServices.payRest();
         ioServices.deliverProduct(productStock, coinStock);
-        ioServices.manageProductNumber(productStock);
+        ioServices.payRest();
         ioServices.manageRest(coinStock);
-        ioServices.searchIfProductIsAvailable(productStock,coinStock);
+        ioServices.searchIfProductIsAvailable();
         restart();
     }
 
     public void restart() {
         Scanner s = new Scanner(System.in);
         System.out.println();
-        System.out.println(" Enter -->  YES  <--  to buy another product.");
+        System.out.println("Enter -->  YES  <--  to buy another product.");
         String optionToRestart = s.nextLine();
         if (optionToRestart.equals("YES")) {
             run();
+        } else {
+            System.out.println(" HAVE A NICE DAY!");
         }
     }
 
