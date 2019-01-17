@@ -14,6 +14,7 @@ public class IOServices {
     public static final String ANSI_RED = "\u001B[31m"; // color Stuff
     public static final String ANSI_BLUE = "\u001B[34m"; // color Stuff
 
+    Integer optionProduct;
     Integer priceOfSelection = 0;
     Integer sumInserted = 0;
     Integer rest = 0;
@@ -42,14 +43,16 @@ public class IOServices {
     }
 
     public void displayMessage() {
-        System.out.println("Hello!");
+        System.out.println("********");
+        System.out.println(" Hello! ");
+        System.out.println("********");
     }
 
     public Integer selectProduct(Map<Product, Integer> products) {
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the code of the product you want to buy: ");
-        Integer optionProduct = scanner.nextInt();
+        optionProduct = scanner.nextInt();
         for (Product product : products.keySet()) {
             if (optionProduct == product.getCod()) {
                 System.out.println(" You selection is --> " + product.getName());
@@ -58,6 +61,8 @@ public class IOServices {
                 System.out.println(" We have " + numberOfProduct + " " + product.getName() + "available");
                 priceOfSelection = product.getPrice();
                 validProdSelection = true;
+                products.put(product, products.get(product) - 1);
+                numberOfProduct = (Integer) products.get(product);
             }
         }
         return null;
@@ -66,7 +71,7 @@ public class IOServices {
     public Integer insertCoin(Map<Coin, Integer> coins, Map<Product, Integer> products) {
 
         Scanner scanner = new Scanner(System.in);
-        if (validProdSelection && numberOfProduct > 0) {
+        if (validProdSelection && numberOfProduct - 1 > -2) {
             while (sumInserted < priceOfSelection) {
                 System.out.println("INSERT -- COIN -- HERE: ");
                 Integer optionCoin = scanner.nextInt();
@@ -88,18 +93,18 @@ public class IOServices {
             rest = sumInserted - priceOfSelection;
             System.out.println("__________________________________________");
             System.out.println(ANSI_BLUE + "Your change is ->" + rest + " " + Currancy.RON.toString());
+            sumInserted = 0;
         }
-
         return rest;
     }
-
 
     public void deliverProduct(Map<Product, Integer> products, Map<Coin, Integer> coins) {
         if (sumInserted >= priceOfSelection && validProdSelection) {
             System.out.println(ANSI_YELLOW + "Thank you! Here is your product!");
         } else {
             while (!validProdSelection) {
-                System.out.println("VendingMachine<->Error1: Invalid product code selection!!!");
+                System.out.println(" ----- VendingMachine <-> Error1: Invalid product code selection!!!");
+                System.out.println();
                 selectProduct(products);
                 insertCoin(coins, products);
                 payRest();
@@ -108,17 +113,27 @@ public class IOServices {
         }
     }
 
+    public Integer searchIfProductIsAvailable(Map<Product, Integer> products, Map<Coin, Integer> coins) {
+        if (numberOfProduct == 0 && numberOfProduct - 1 > -1) {
+            System.out.println(" ----- VendingMachine <-> Error2: Product not available!!!");
+            System.out.println();
+            selectProduct(products);
+            insertCoin(coins, products);
+            payRest();
+            deliverProduct(products, coins);
+            searchIfProductIsAvailable(products, coins);
+        }
+        return null;
+    }
+
     public Integer manageProductNumber(Map<Product, Integer> products) {
-        if (numberOfProduct == 0) {
-            System.out.println(ANSI_RED + " We are sorry. Product not available.");
-        }
-
         if (sumInserted >= priceOfSelection && numberOfProduct > 0) {
-            numberOfProduct = numberOfProduct - 1;
-        }
 
+            System.out.println("NUmber of products remaining >>>" + numberOfProduct);
+
+        }
         System.out.println(" Number of product remaining in stock --> " + numberOfProduct);
-        return numberOfProduct;
+        return products.get(optionProduct);
     }
 
     public Integer manageRest(Map<Coin, Integer> coins) {
@@ -138,10 +153,8 @@ public class IOServices {
                 } else {
                     System.out.println("We are sorry. Change not available.");
                     System.out.println("We recommend inserting smaller coins.");
-
                 }
             }
-
         }
         return sumInMachine;
     }

@@ -7,11 +7,13 @@ import Services.IOServices;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
 
         Map<Product, Integer> products = new LinkedHashMap<Product, Integer>();
+
         Product suc1 = new Product("Cola doza   ", 2, 1, "0.25l");
         Product suc2 = new Product("Cola sticla ", 4, 2, "0.50l");
         Product suc3 = new Product("Fanta doza  ", 2, 3, "0.25l");
@@ -35,7 +37,6 @@ public class Main {
         IOServices ios = new IOServices();
         VendingMachine myVendingMachine = new VendingMachine(products, coins, Currancy.RON, ios);
         myVendingMachine.run();
-
 
     }
 }
